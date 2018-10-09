@@ -1,12 +1,13 @@
-from Requests.DictionaryJson import DictionaryJson
+from Lexical.Lexical import Lexical
 
 def main():
-    dictionary = DictionaryJson()
+    lexical = Lexical()
     while True:
-        palavra = input("Digite uma palavra: ")
+        palavra = input("Digite uma frase: ")
         if palavra == "exit":
             break
-        print (dictionary.get_definition(palavra))
+        lexical.analize_phrase(palavra)
+        print (lexical.dictionary)
 
 if __name__ == "__main__":
     main()
