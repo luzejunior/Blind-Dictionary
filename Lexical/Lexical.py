@@ -27,4 +27,4 @@ class Lexical:
             self.dictionary.append([token, "Substantivo", self.word_counter])
         else:
             result = self.dictionaryJson.get_definition(token)
-            self.dictionary.append([token, result[1], self.word_counter])
+            self.dictionary.append([result[0], result[1], self.word_counter])

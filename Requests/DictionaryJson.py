@@ -18,7 +18,7 @@ class DictionaryJson:
         elif recursive:
             new_word = self.__search_similar_words(word)
             result = self.get_definition(new_word)
-            return [new_word, result[1]]
+            return [result[0], result[1], True]
         else:
             temp_word = word
             if word[-2:] == "ou":
@@ -46,9 +46,11 @@ class DictionaryJson:
                 word_list[-4:] = "ir"
                 temp_word = "".join(word_list)
             recursive = self.get_definition(temp_word, True)
+            if recursive[2]:
+                word = recursive[0]
             classification = recursive[1]
 
-        return [word, classification]
+        return [word, classification, False]
 
     def __make_request(self, url):
         response = requests.get(url)
