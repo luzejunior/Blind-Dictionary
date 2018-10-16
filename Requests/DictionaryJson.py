@@ -6,7 +6,7 @@ class DictionaryJson:
         self.definition_url = "http://www.dicionario-aberto.net/search-json/"
         self.similar_url = "http://www.dicionario-aberto.net/search-json?like="
 
-    def get_definition(self, word):
+    def get_definition(self, word, recursive = False):
         url_path = self.definition_url + word
         data = self.__make_request(url_path)
 
@@ -15,7 +15,12 @@ class DictionaryJson:
                 classification = self.__get_classification(data['superEntry'][0]['entry']['sense'][0]['gramGrp'])
             elif 'entry' in data:
                 classification = self.__get_classification(data['entry']['sense'][0]['gramGrp'])
+        elif recursive:
+            new_word = self.__search_similar_words(word)
+            result = self.get_definition(new_word)
+            return [new_word, result[1]]
         else:
+            temp_word = word
             if word[-2:] == "ou":
                 word_list = list(word)
                 word_list[-2:] = "ar"
@@ -32,7 +37,15 @@ class DictionaryJson:
                 word_list = list(word)
                 word_list[-4:] = "er"
                 temp_word = "".join(word_list)
-            recursive = self.get_definition(temp_word)
+            elif word[-2:] == "iu":
+                word_list = list(word)
+                word_list[-2:] = "ir"
+                temp_word = "".join(word_list)
+            elif word[-4:] == "indo":
+                word_list = list(word)
+                word_list[-4:] = "ir"
+                temp_word = "".join(word_list)
+            recursive = self.get_definition(temp_word, True)
             classification = recursive[1]
 
         return [word, classification]
@@ -43,6 +56,21 @@ class DictionaryJson:
             return json.loads(response.text)
         except json.JSONDecodeError:
             return False
+
+    def __search_similar_words(self, word):
+        print("A palavra: " + word + " está errada")
+        url_path = self.similar_url + word
+        data = self.__make_request(url_path)
+
+        if data:
+            counter = 1
+            print("Você quis dizer: ")
+            for token in data["list"]:
+                print(str(counter) + " - " + token)
+                counter = counter + 1
+            selection = input("Escolha um número: ")
+            return data["list"][int(selection) - 1]
+
 
     def __get_classification(self, response_class):
         if response_class == "f.":
