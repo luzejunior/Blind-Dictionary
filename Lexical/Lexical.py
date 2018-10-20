@@ -1,4 +1,5 @@
 from Requests.DictionaryJson import DictionaryJson
+import re
 
 class Lexical:
 
@@ -13,12 +14,16 @@ class Lexical:
     def analize_phrase(self, phrase):
         self.dictionary = []
         self.word_counter = 1
-        tokens = phrase.split()
+
+        tokens = re.sub(r'(\w*)([.])(\w*)', r'\1 \2 \3', phrase).split()
+        # tokens = phrase.split()
         for token in tokens:
+
             self.__analize_token(token)
             self.word_counter = self.word_counter + 1
 
     def __analize_token(self, token):
+
         if token in self.artigos:
             self.dictionary.append([token, "Artigo", self.word_counter])
         elif token in self.preposicao:
