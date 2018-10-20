@@ -8,10 +8,10 @@ from Model.Token import *
 
 
 class Syntax:
-    def __init__(self, lexical_input=[Token('token',NOUN, 0, SINGULAR)]):
+    def __init__(self, lexical_input=Token()):
         self.lexical_input = lexical_input[::-1]
         self.success = False
-        self._last_read = Token('token',NOUN, 0, SINGULAR)
+        self._last_read = Token()
         self._symbols_table = []
         self._symbol_arguments_table = []
         self._types_table = []
