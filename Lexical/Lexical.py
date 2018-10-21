@@ -26,14 +26,13 @@ class Lexical:
         #C:\Users\luzen\Documents\Codigos\Blind-Dictionary\stanford-corenlp-full-2018-10-05
         self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Documents', 'Codigos', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
         self._lang_checker = language_check.LanguageTool('en-US')
+        self._sucess = True
 
     def _show_error(self, word, error_msg):
         self._logger.error('[WORD]: ' + word + ' | ' + error_msg)
 
     def analize_phrase(self, phrase):
-        # matches = self._lang_checker.check(phrase)
-
-        # print(matches)
+        self._sucess = True
         self._logger.info('Lexical analyzer has been initiated.')
         self._dictionary = []
         self._word_counter = 1
@@ -43,6 +42,7 @@ class Lexical:
         for i, token in enumerate(tokens):
             if self.get_misspelling_error(token):
                 self._show_error(token, 'This word might have been incorrectly spelled.')
+                self._sucess = False
                 break
             self._analize_token(token, tokens_tag[i][1])
             self._word_counter = self._word_counter + 1
@@ -56,10 +56,12 @@ class Lexical:
         return False
 
     def _analize_token(self, token, lexical_class):
-        self._logger.info('Analyzing token: ' + token + '.')
+        self._logger.info('Analyzing token: \'' + token + '\'.')
         result = self._dictionaryJson.generate_classification(token.lower(), lexical_class)
         self._logger.info('[Token]: ' + token + ' | [Classification]: ' + result[1] + ' [NLTK]: ' + lexical_class +' | [Features]: ' + str(result[2]))
         self._dictionary.append([token.lower(), result[1], result[2], self._word_counter])
 
     def get_result(self):
+        if not self._sucess:
+            return None
         return self._dictionary

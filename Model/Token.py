@@ -9,7 +9,6 @@ ADVERB = 'Adverb'
 ADJECTIVE = 'Adjective'
 DETERMINER = 'Determiner'
 DOT = 'Period'
-NOT = 'not'
 
 
 class Token:
