@@ -22,7 +22,9 @@ class Lexical:
         self._dictionary = []
         self._dictionaryJson = DictionaryJson()
         self._logger = my_logger('LexicalAnalyzer')
-        self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Hacking', 'UFPB', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
+        #self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Hacking', 'UFPB', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
+        #C:\Users\luzen\Documents\Codigos\Blind-Dictionary\stanford-corenlp-full-2018-10-05
+        self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Documents', 'Codigos', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
         self._lang_checker = language_check.LanguageTool('en-US')
 
     def _show_error(self, word, error_msg):
@@ -61,4 +63,3 @@ class Lexical:
 
     def get_result(self):
         return self._dictionary
-

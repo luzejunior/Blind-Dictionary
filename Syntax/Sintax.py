@@ -212,16 +212,3 @@ class Syntax:
                 self._show_error()
                 return False
         return True
-
-
-
-
-
-
-
-
-
-
-
-
-
