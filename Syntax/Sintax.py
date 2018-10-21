@@ -9,11 +9,6 @@ SUBTOP = -2
 NUMBER = 'Number'
 TENSE = 'Tense'
 PERSON = 'Person'
-
-
-
-
-
 class Syntax:
 
     def __init__(self, lexical_input=[Token()]):
@@ -59,7 +54,6 @@ class Syntax:
             return True
         else:
             return False
-
 
     def start(self):
         # print(self._lexical_input)
@@ -122,7 +116,7 @@ class Syntax:
                 return False
 
         elif not self._match_lexical_category(token, NOUN):
-            self._show_error(token,'Missing expected Noun.')
+            self._show_error(token, 'Missing expected Noun.')
             return False
         else:
             self._logger.info('Noun has been read. Token: ' + token.get_token() + '.')
@@ -159,7 +153,6 @@ class Syntax:
             self._get_next_token()
 
         return True
-
 
     def _preposition_construction(self):
         token = self._get_next_token(pop=False)

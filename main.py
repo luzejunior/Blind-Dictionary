@@ -10,9 +10,9 @@ def main():
         if palavra == "exit":
             break
         lexical.analize_phrase(palavra)
-        print(lexical.dictionary)
-        syntax = Syntax(lexical_input=lexical.dictionary)
-        syntax.start()
+        print(lexical.get_result())
+        # syntax = Syntax(lexical_input=lexical.dictionary)
+        # syntax.start()
 
         # Tokens = []
         # for i,word in enumerate(lexical.dictionary):

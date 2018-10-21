@@ -1,5 +1,3 @@
-TYPE = 0
-TEXT = 1
 class Classification:
     def __init__(self, lexical_category, features):
         self._lexical_category = lexical_category
