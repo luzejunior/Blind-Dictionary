@@ -161,8 +161,6 @@ class DictionaryJson:
             features = self._generate_pronoun_features(word, lexical_class)
         elif lexical_class in noun_list:
             lexical_tag = 'Noun'
-            if not self._search_for_word(word):
-                self._logger.error('This word wasn\'t found in the database. Token: ' + word + '.')
             features = self._generate_noun_features(lexical_class)
         else:
             lexical_tag = 'Other'
