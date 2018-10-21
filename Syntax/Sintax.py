@@ -1,5 +1,6 @@
 from Model.Token import *
 from Utils.Logger import my_logger
+import Utils.VoiceGenerator as vg
 CLASSIFICATION = 1
 LINE = 2
 MARK = '$'
@@ -28,9 +29,12 @@ class Syntax:
         if not token:
             tk = self._last_read
         if not token_2:
+            message = "We found an error on word: " + tk.get_token() + ". Error is: "  + error_msg
             self._logger.error('Token_read: ' + tk.get_token() + '. ' + error_msg)
+            vg.saySomething(message)
         else:
             self._logger.error('Token_1: ' + tk.get_token() + ' Token_2: ' + token_2.get_token() + '. ' + error_msg)
+
 
 
     def _is_list_empty(self):

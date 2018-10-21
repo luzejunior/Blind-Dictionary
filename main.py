@@ -7,7 +7,7 @@ def main():
     lexical = Lexical()
 
     while True:
-        vg.saySomething("Write Something right now")
+        vg.saySomething("You can write now")
         palavra = input("You can write now: ")
         if palavra == "exit":
             goodbye = ["Thanks for using our dictionary", "Hope to see you again soon!"]
