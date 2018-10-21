@@ -1,8 +1,8 @@
 import json
 import requests
-from Utils.Logger import Logger
+from Utils.Logger import my_logger
 
-verbs_list = ['VBD','VBG', 'VBN', 'VBP', 'VBZ']
+verbs_list = ['VB','VBD','VBG', 'VBN', 'VBP', 'VBZ']
 adverbs_list = ['RB', 'RBR', 'RBS']
 adjective_list = ['JJ', 'JJR', 'JJS']
 preposition_list = ['IN']
@@ -25,7 +25,7 @@ class DictionaryJson:
         self.language = 'en'
         self.definition_url = 'https://od-api.oxforddictionaries.com:443/api/v1/inflections/'  + self.language + '/'
         self.spelling_mistake_url = 'https://languagetool.org/api/v2/check?language=en-US&text='
-        self._logger = Logger('LexicalAnalyzer').get_logger()
+        self._logger = my_logger('LexicalAnalyzer')
 
     def _generate_noun_features(self, lexical_class):
         feature = dict()
@@ -45,6 +45,10 @@ class DictionaryJson:
         features = dict()
         if lexical_class == 'VBD':
             tense = 'Past'
+        elif lexical_class == 'VB':
+            tense = 'Present'
+            person = 'non-3d'
+            number = 'Singular'
         elif lexical_class == 'VBG':
             tense = 'Present'
         elif lexical_class == 'VBN':

@@ -1,6 +1,5 @@
 from Model.Token import *
-from Utils.Logger import Logger
-WORD = 0
+from Utils.Logger import my_logger
 CLASSIFICATION = 1
 LINE = 2
 MARK = '$'
@@ -19,7 +18,7 @@ class Syntax:
 
         self.success = False
         self._last_read = Token()
-        self._logger = Logger('SyntaxAnalyzer').get_logger()
+        self._logger = my_logger('SyntaxAnalyzer')
 
     def _show_error(self, token=Token(), error_msg=''):
         tk = token
@@ -72,6 +71,7 @@ class Syntax:
             if self._is_list_empty:
                 self.success = True
 
+    def _determiner_checker(self):
     def _sentence_routine(self):
         if self._sintagma_nominal_routine():
             # if self._sintagma_verbal_routine():
