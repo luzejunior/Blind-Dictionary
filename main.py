@@ -11,8 +11,8 @@ def main():
             break
         lexical.analize_phrase(palavra)
         print(lexical.get_result())
-        # syntax = Syntax(lexical_input=lexical.dictionary)
-        # syntax.start()
+        syntax = Syntax(lexical_input=lexical.get_result())
+        syntax.start()
 
         # Tokens = []
         # for i,word in enumerate(lexical.dictionary):

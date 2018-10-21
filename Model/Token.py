@@ -8,8 +8,9 @@ PRONOUN = 'Pronoun'
 ADVERB = 'Adverb'
 ADJECTIVE = 'Adjective'
 DETERMINER = 'Determiner'
-DOT = 'Dot'
+DOT = 'Period'
 NOT = 'not'
+
 
 class Token:
     def __init__(self, token_dict=None):
