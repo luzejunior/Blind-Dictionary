@@ -10,23 +10,17 @@ class Classification:
     def get_lexical_category(self):
         return self._lexical_category
 
-    def get_feature(self, id_feature):
-        if (id_feature > self._length_features -1) or (id_feature < 0):
+    def get_feature(self, key_feature):
+        if not key_feature in self._features:
             return None
 
-        return self._features[id_feature][TYPE], self._features[id_feature][TEXT]
+        return self._features[key_feature]
 
-    def get_type_feature(self, id_feature):
-        if (id_feature > self._length_features -1) or (id_feature < 0):
-            return None
+    def get_type_features(self):
+        return self._features.keys()
 
-        return self._features[id_feature][TYPE]
-
-    def get_feature_text(self, id_feature):
-        if (id_feature > self._length_features -1) or (id_feature < 0):
-            return None
-
-        return self._features[id_feature][TEXT]
+    def get_features(self):
+        return self._features.values()
 
 
     def get_size_features(self):
