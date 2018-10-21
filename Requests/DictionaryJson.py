@@ -10,6 +10,7 @@ determiner = ['DT']
 pronoun_list = ['PRP$', 'PRP']
 noun_list = ['NN', 'NNS', 'NNP', 'NNPS']
 
+td_person_pronoun = ['she', 'her', 'he', 'him', 'it']
 third_person_pronoun = [['she', 'her', 'he', 'him', 'it'],['they', 'them']]
 first_person_pronoun = [['i','me'],['we', 'us']]
 second_person_pronoun = [['you'],['you']]
@@ -42,31 +43,39 @@ class DictionaryJson:
         tense = None
         number = None
         person = None
+        Type = None
         features = dict()
         if lexical_class == 'VBD':
             tense = 'Past'
+            Type = 'non-Gerund'
         elif lexical_class == 'VB':
             tense = 'Present'
             person = 'non-3d'
             number = 'Singular'
+            Type = 'Base'
         elif lexical_class == 'VBG':
             tense = 'Present'
+            Type = 'Gerund'
         elif lexical_class == 'VBN':
             tense = 'Past'
+            Type = 'Participle'
         elif lexical_class == 'VBP':
             tense = 'Present'
             person = 'non-3d'
+            Type = 'Base'
         elif lexical_class == 'VBZ':
             tense = 'Present'
             person = '3d'
             number = 'Singular'
+            Type = 'non-Base'
         if tense:
             features['Tense'] = tense
         if number:
             features['Number'] = number
         if person:
             features['Person'] = person
-
+        if type:
+            features['Type'] = Type
         return features
 
     def _generate_adverbs_adjectives_features(self, lexical_class):
@@ -91,14 +100,20 @@ class DictionaryJson:
         feature = dict()
         number = None
         person = None
+        person_conjugation = None
 
         if lexical_class == 'PRP':
             if word in first_person_pronoun[0] or word in first_person_pronoun[1]:
-                person = 'First'
+                person_conjugation = 'First'
             elif word in second_person_pronoun[0] or word in second_person_pronoun[1]:
-                person = 'Second'
+                person_conjugation = 'Second'
             else:
-                person = 'Third'
+                person_conjugation = 'Third'
+
+            if word in td_person_pronoun:
+                person = '3d'
+            else:
+                person = 'non-3d'
 
             if word in first_person_pronoun[0] or word in second_person_pronoun[0] or word in third_person_pronoun[0]:
                 number = 'Singular'
@@ -114,6 +129,8 @@ class DictionaryJson:
             feature['Number'] = number
         if person:
             feature['Person'] = person
+        if person_conjugation:
+            feature['Conjugation'] = person_conjugation
 
         return feature
 

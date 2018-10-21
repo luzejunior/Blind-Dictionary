@@ -8,6 +8,9 @@ SUBTOP = -2
 NUMBER = 'Number'
 TENSE = 'Tense'
 PERSON = 'Person'
+TYPE = 'Type'
+determiner_list_singular = ['this', 'that']
+determiner_list_plural = ['these', 'those']
 class Syntax:
 
     def __init__(self, lexical_input=[Token()]):
@@ -20,11 +23,15 @@ class Syntax:
         self._last_read = Token()
         self._logger = my_logger('SyntaxAnalyzer')
 
-    def _show_error(self, token=Token(), error_msg=''):
+    def _show_error(self, token=None, token_2=None, error_msg=''):
         tk = token
         if not token:
             tk = self._last_read
-        self._logger.error('Token_read: ' + tk.get_token() + '. ' + error_msg)
+        if not token_2:
+            self._logger.error('Token_read: ' + tk.get_token() + '. ' + error_msg)
+        else:
+            self._logger.error('Token_1: ' + tk.get_token() + ' Token_2: ' + token_2.get_token() + '. ' + error_msg)
+
 
     def _is_list_empty(self):
         return len(self._lexical_input) == 0
@@ -49,7 +56,7 @@ class Syntax:
             return False
 
     def _match_lexical_category(self, token, expected_category):
-        if token.get_classification(expected_category):
+        if token.get_classification().get_lexical_category() == expected_category:
             return True
         else:
             return False
@@ -66,20 +73,91 @@ class Syntax:
 
             token = self._get_next_token()
             if (not token) or (token and not self._match_lexical_category(token, DOT)):
-                self._show_error(token, 'Missing expected period.')
+                self._show_error(token=token, error_msg='Missing expected period.')
 
             if self._is_list_empty:
                 self.success = True
 
-    def _determiner_checker(self):
+    def _determiner_checker(self, determiner_token, noun_token):
+        self._logger.info('Checking agreement between Determiner and Noun.')
+        if determiner_token.get_token() in determiner_list_singular:
+            if noun_token.get_classification().get_feature(NUMBER) == 'Singular':
+                return True
+            self._show_error(token=determiner_token, token_2=noun_token,
+                             error_msg='The determiner and the noun don\'t match in agreement.')
+            return False
+        elif determiner_token.get_token() in determiner_list_plural:
+            if noun_token.get_classification().get_feature(NUMBER) == 'Plural':
+                return True
+            self._show_error(token=determiner_token, token_2=noun_token,
+                             error_msg='The determiner and the noun don\'t match in agreement.')
+            return False
+        return True
+
+    def _pronoun_checker(self, personal_pronoun=None, possessive_pronoun=None, noun=None):
+        if personal_pronoun:
+            if personal_pronoun.get_classification().get_feature(PERSON):
+                return True
+            else:
+                return False
+        elif possessive_pronoun and noun:
+            if not possessive_pronoun.get_classification().get_feature(PERSON):
+                if possessive_pronoun.get_classification().get_feature(NUMBER) == noun.get_classification().get_feature(NUMBER):
+                    return True
+                else:
+                    self._show_error(token=possessive_pronoun,token_2=noun,
+                                     error_msg='Possessive pronoun and noun don\'t match in agreement.')
+                    return False
+            else:
+                self._show_error(token=possessive_pronoun, error_msg='Expected possessive pronoun')
+                return False
+    def _verb_checker(self, noun_pronoun, verb):
+        self._logger.info('Checking agreement between noun|pronoun and verb. Token_1: ' + noun_pronoun.get_token() + ' Token_2: ' + verb.get_token() + '.')
+        person_feature = verb.get_classification().get_feature(PERSON)
+        if person_feature:
+            if person_feature == '3d':
+                if self._pronoun_checker(personal_pronoun=noun_pronoun):
+                    if noun_pronoun.get_classification().get_feature(PERSON) == '3d':
+                        return True
+                    else:
+                        self._show_error(token=noun_pronoun, token_2=verb,
+                                         error_msg='Pronoun and verb don\'t match in agreement.')
+                        return False
+                else:
+                    if noun_pronoun.get_classification().get_feature(NUMBER) == 'Singular':
+                        return True
+                    else:
+                        self._show_error(token=noun_pronoun, token_2=verb,
+                                         error_msg='Noun and verb don\'t match in agreement.')
+                        return False
+            else:
+                if self._pronoun_checker(personal_pronoun=noun_pronoun):
+                    if noun_pronoun.get_classification().get_feature(PERSON) != '3d':
+                        return True
+                    else:
+                        self._show_error(token=noun_pronoun, token_2=verb,
+                                         error_msg='Pronoun and verb don\'t match in agreement.')
+                        return False
+                else:
+                    if noun_pronoun.get_classification().get_feature(NUMBER) == 'Plural':
+                        return True
+                    else:
+                        self._show_error(token=noun_pronoun, token_2=verb,
+                                         error_msg='Noun and verb don\'t match in agreement.')
+                        return False
+
+        if verb.get_classification().get_feature(TYPE) == 'Gerund':
+            self._show_error(token=verb,
+                             error_msg='Cannot use verb in gerund without \'is\' or \'are\' before it.')
+            return False
+        return True
+
     def _sentence_routine(self):
         if self._sintagma_nominal_routine():
-            # if self._sintagma_verbal_routine():
-            #     return True
-            # else:
-            #     self._show_error()
-            #     return False
-            return True
+            if self._sintagma_verbal_routine():
+                return True
+            else:
+                return False
         else:
             self._show_error()
             return False
@@ -93,30 +171,33 @@ class Syntax:
 
             if self._is_list_empty():
                 return False
-            token = self._get_next_token()
+            token_aux = self._get_next_token()
 
-            if not self._match_lexical_category(token, NOUN):
-                self._show_error(token, 'Missing expected Noun.')
+            if not self._match_lexical_category(token_aux, NOUN):
+                self._show_error(token=token, error_msg='Missing expected Noun.')
                 return False
-            self._logger.info('Noun has been read. Token: ' + token.get_token() + '.')
+            self._logger.info('Noun has been read. Token: ' + token_aux.get_token() + '.')
+            if not self._determiner_checker(token, token_aux):
+                return False
 
         elif self._match_lexical_category(token, PRONOUN):
             self._logger.info('Pronoun has been read. Token: ' + token.get_token() + '.')
-            if self._is_list_empty():
-                return False
-            token_aux = self._get_next_token(pop=False)
+            if not self._pronoun_checker(personal_pronoun=token):
+                self._logger.info('Possessive pronoun has been read. Token: ' + token.get_token() + '.')
+                if self._is_list_empty():
+                    return False
+                token = self._get_next_token()
 
-            if self._match_lexical_category(token_aux, NOUN):
-                self._logger.info('Noun has been read right after Pronoun. Checking Agreement.  Tokens: ' + token.get_token() + ' and ' + token_aux.get_token() + '.')
-                self._get_next_token()
-                if self._noun_validation(token, token_aux):
-                    self._logger.info('Pronoun and Noun match in agreement.')
-                    return True
-                self._show_error(token, 'Pronoun and Noun don\'t match in agreement.')
-                return False
+                if not self._match_lexical_category(token, NOUN):
+                    self._show_error(token=token, error_msg='Missing expected Noun after Possessive Pronoun.')
+                    return False
+                else:
+                    self._logger.info('Noun has been read after possessive pronoun. Token: ' + token.get_token() + '.')
+            else:
+                self._logger.info('Personal pronoun has been read. Token: ' + token.get_token() + '.')
 
         elif not self._match_lexical_category(token, NOUN):
-            self._show_error(token, 'Missing expected Noun.')
+            self._show_error(token=token, error_msg='Missing expected Noun.')
             return False
         else:
             self._logger.info('Noun has been read. Token: ' + token.get_token() + '.')
@@ -124,15 +205,20 @@ class Syntax:
         return True
 
     def _sintagma_verbal_routine(self):
+        noun_token = self._last_read
         if self._is_list_empty():
             return False
         token = self._get_next_token()
 
         if not self._match_lexical_category(token, VERB):
-            self._show_error()
+            self._show_error(token=token, error_msg='Missing expected verb.')
             return False
         else:
-            return self._phrase_construction()
+            if self._verb_checker(noun_pronoun=noun_token, verb=token):
+                # return self._phrase_construction()
+                return True
+            else:
+                return False
 
     def _phrase_construction(self):
         if self._is_list_empty():
@@ -199,8 +285,6 @@ class Syntax:
         token = self._get_next_token(pop=False)
         if not self._match_lexical_category(token, ADJECTIVE):
             return True
-
-
         while not self._is_list_empty():
             token = self._get_next_token(pop=False)
             if self._match_lexical_category(token, ADJECTIVE):
