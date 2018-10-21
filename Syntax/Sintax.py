@@ -346,16 +346,3 @@ class Syntax:
                 self._show_error(token=token, error_msg='Missing expected Noun|Adjective.')
                 return False
         return True
-
-
-
-
-
-
-
-
-
-
-
-
-
