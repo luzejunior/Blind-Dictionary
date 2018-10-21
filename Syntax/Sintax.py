@@ -165,15 +165,18 @@ class Syntax:
         # print(self._lexical_input)
         self.success = True
         self._logger.info('Initiating syntax analysis.')
+        vg.saySomething("Initiating syntax analysis.")
         self._program_routine()
         if self.success:
-            self._logger.info('Your program syntax is correct.')
+            self._logger.info('Your phrase syntax is correct.')
+            vg.saySomething("Your phrase syntax is correct.")
 
     def _program_routine(self):
-        if self._sentence_routine():
-            token = self._get_next_token()
-            if (not token) or (token and not self._match_lexical_category(token, DOT)):
-                self._show_error(token=token, error_msg='Missing expected period.')
+        if self._check_repeated_words():
+            if self._sentence_routine():
+                token = self._get_next_token()
+                if (not token) or (token and not self._match_lexical_category(token, DOT)):
+                    self._show_error(token=token, error_msg='Missing expected period.')
 
     def _sentence_routine(self):
         if self._sintagma_nominal_routine():
@@ -348,5 +351,12 @@ class Syntax:
                 break
             else:
                 self._show_error(token=token, error_msg='Missing expected Noun|Adjective.')
+                return False
+        return True
+
+    def _check_repeated_words(self):
+        for i in range(len(self._lexical_input)-1, 0, -1):
+            if self._lexical_input[i].get_token() == self._lexical_input[i-1].get_token():
+                self._show_error(token=self._lexical_input[i], error_msg='Repeated tokens were found.')
                 return False
         return True

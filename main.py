@@ -17,10 +17,11 @@ def main():
         vg.sayLotOfThings(typed)
         lexical.analize_phrase(palavra)
         if lexical.get_result():
+            print(lexical.get_result())
             syntax = Syntax(lexical_input=lexical.get_result())
             syntax.start()
         else:
-            print('Try again...')
+            vg.saySomething("Please write your phrase again")
 
 if __name__ == "__main__":
     greetings = ["Hello, welcome to our visually impaired english dictionary", "You can write whatever phrase you want", "Press enter when you done typing"]

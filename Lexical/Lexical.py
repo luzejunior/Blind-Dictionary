@@ -2,6 +2,7 @@ from Requests.DictionaryJson import DictionaryJson
 import re
 # import nltk
 from Utils.Logger import my_logger
+import Utils.VoiceGenerator as vg
 import language_check
 from stanfordcorenlp import StanfordCoreNLP
 import os
@@ -30,10 +31,12 @@ class Lexical:
 
     def _show_error(self, word, error_msg):
         self._logger.error('[WORD]: ' + word + ' | ' + error_msg)
+        vg.saySomething("You typed: " + word + ", " + error_msg)
 
     def analize_phrase(self, phrase):
         self._sucess = True
         self._logger.info('Lexical analyzer has been initiated.')
+        vg.saySomething("Lexical analyzer has been initiated.")
         self._dictionary = []
         self._word_counter = 1
         tokens = re.sub(r'(\w*)([.])(\w*)', r'\1 \2 \3', phrase)

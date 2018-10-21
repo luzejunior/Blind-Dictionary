@@ -138,6 +138,8 @@ class DictionaryJson:
     def generate_classification(self, word, lexical_class):
         if word == '.':
             return [word, 'Period', {'Type':None}]
+        if word =='to':
+            return [word, 'Preposition', {'Type': None}]
 
         lexical_tag = None
         features = None
