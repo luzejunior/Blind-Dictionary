@@ -12,6 +12,7 @@ PERSON = 'Person'
 TYPE = 'Type'
 determiner_list_singular = ['this', 'that']
 determiner_list_plural = ['these', 'those']
+
 class Syntax:
 
     def __init__(self, lexical_input=[Token()]):
@@ -23,6 +24,7 @@ class Syntax:
         self.success = False
         self._last_read = Token()
         self._logger = my_logger('SyntaxAnalyzer')
+        self._found_does = False
 
     def _show_error(self, token=None, token_2=None, error_msg=''):
         self.success = False
@@ -239,6 +241,10 @@ class Syntax:
             self._show_error(token=token, error_msg='Missing expected verb.')
             return False
         else:
+            if token.get_token() == 'does':
+                self._found_does = True
+            else:
+                self._found_does = False
             if self._verb_checker(noun_pronoun=noun_token, verb=token):
                 return self._phrase_construction()
             else:
@@ -298,7 +304,7 @@ class Syntax:
     def _adverb_construction(self):
         token = self._get_next_token(pop=False)
 
-        if token.get_token() == 'not':
+        if token.get_token() == 'not' or token.get_token() == 'n\'t':
             self._get_next_token()
             self._logger.info('\'Not\' adverb has been read.')
 
@@ -313,7 +319,12 @@ class Syntax:
             else:
                 self._logger.info('%s has been read after \'not\'.' % (token.get_classification().get_lexical_category()) + ' Token: ' + token.get_token() + '.')
                 if self._match_lexical_category(token, VERB):
-                    if not token.get_classification().get_feature(TYPE) == 'Gerund':
+                    if self._found_does:
+                        if not token.get_classification().get_feature(TYPE) == 'Base':
+                            self._show_error(token=token, error_msg='The verb must be in its base form after doesn\'t.')
+                            return False
+
+                    elif not token.get_classification().get_feature(TYPE) == 'Gerund':
                         self._show_error(token=token, error_msg='Only verb in gerund can be used after \'not\'.')
                         return False
 

@@ -23,9 +23,9 @@ class Lexical:
         self._dictionary = []
         self._dictionaryJson = DictionaryJson()
         self._logger = my_logger('LexicalAnalyzer')
-        #self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Hacking', 'UFPB', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
+        self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Hacking', 'UFPB', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
         #C:\Users\luzen\Documents\Codigos\Blind-Dictionary\stanford-corenlp-full-2018-10-05
-        self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Documents', 'Codigos', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
+        # self._nlp = StanfordCoreNLP(os.path.join(os.path.expanduser('~'), 'Documents', 'Codigos', 'Blind-Dictionary', 'stanford-corenlp-full-2018-10-05'))
         self._lang_checker = language_check.LanguageTool('en-US')
         self._sucess = True
 
@@ -41,13 +41,14 @@ class Lexical:
         self._word_counter = 1
         tokens = re.sub(r'(\w*)([.])(\w*)', r'\1 \2 \3', phrase)
         tokens_tag = self._nlp.pos_tag(tokens)
+        print(tokens_tag)
         tokens = tokens.split()
-        for i, token in enumerate(tokens):
-            if self.get_misspelling_error(token):
+        for i, token in enumerate(tokens_tag):
+            if self.get_misspelling_error(token[0]):
                 self._show_error(token, 'This word might have been incorrectly spelled.')
                 self._sucess = False
                 break
-            self._analize_token(token, tokens_tag[i][1])
+            self._analize_token(token[0], token[1])
             self._word_counter = self._word_counter + 1
 
     def get_misspelling_error(self, word):

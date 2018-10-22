@@ -1,0 +1,9 @@
+Phrase -> NominalSintagma VerbalSintagma.
+NominalSintagma -> Determiner Noun | PersonalPronoun | Noun | PossessivePronoun Noun
+VerbalSintagma -> Verb PhraseConstruction
+PhraseConstruction -> Preposition Verb PhraseCont | Preposition Noun | PhraseCont 
+Preposition -> to | of
+PhraseCont -> AdverbialConstruction  | AdjectiveConstruction | Noun | Empty
+AdverbialConstruction -> Adverbio | not Noun | not Adjective | not Verb
+AdjectiveConstruction -> Adjective | Adjective Noun | Adjective AdjectiveConstruction
+
