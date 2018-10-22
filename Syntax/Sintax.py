@@ -34,9 +34,9 @@ class Syntax:
             self._logger.error('Token_read: ' + tk.get_token() + '. ' + error_msg)
             vg.saySomething(message)
         else:
+            message = "We found an error on two words: " + tk.get_token() +  "and " + token_2.get_token() + ". Error is: "  + error_msg
             self._logger.error('Token_1: ' + tk.get_token() + ' Token_2: ' + token_2.get_token() + '. ' + error_msg)
-
-
+            vg.saySomething(message)
 
     def _is_list_empty(self):
         return len(self._lexical_input) == 0
